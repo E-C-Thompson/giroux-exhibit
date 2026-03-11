@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To Restore People's Names — Dr. Amy Larner Giroux</title>
+
+  <!-- model-viewer for 3D embeds -->
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── CSS Variables ─────────────────────────────── */
+    :root {
+      --cream:       #f5efe0;
+      --panel-bg:    #f8f1de;
+      --panel-border:#c8b88a;
+      --ink:         #1a1208;
+      --ink-light:   #3d2f14;
+      --accent:      #8b3a2a;
+      --accent2:     #2a5c8b;
+      --blueprint:   #1a1a0e;
+      --rule:        #c8b88a;
+      --shadow:      rgba(26,18,8,0.28);
+      /* Exhibit palette — muted from original Canva values */
+      --exhibit-teal:   #7ecbcd;   /* #a7eff1 at ~80% saturation */
+      --exhibit-red:    #a33;      /* #cc0000 softened */
+      --exhibit-cream:  #fff1d2;   /* as-is, used as highlight bg */
+    }
+
+    /* ─── Reset & Base ──────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: #1a1a0e;
+      font-family: 'EB Garamond', Georgia, serif;
+      color: var(--ink);
+      overflow-x: hidden;
+    }
+
+    /* ─── Cemetery Map Background ───────────────────── */
+    .blueprint-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      /* The actual cemetery survey map */
+      background-image: url('Cemetery_Map_Background.png');
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    /* Dark overlay so text panels remain legible,
+       while the map stays visible in the gaps */
+    .blueprint-bg::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(15, 28, 48, 0.72);
+    }
+
+    /* Subtle vignette at edges */
+    .blueprint-bg::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(10, 20, 36, 0.55) 100%);
+    }
+
+    /* ─── Page Wrapper ──────────────────────────────── */
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+    }
+
+    /* ─── Site Header ───────────────────────────────── */
+    .site-header {
+      text-align: center;
+      padding: 60px 0 20px;
+    }
+
+    .site-header .overline {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      color: rgba(255,255,255,0.5);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .site-header h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.2rem, 5vw, 3.6rem);
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+
+    .site-header .subtitle {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: rgba(255,255,255,0.72);
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .header-rule {
+      width: 60px;
+      height: 2px;
+      background: var(--panel-border);
+      margin: 24px auto 0;
+      opacity: 0.6;
+    }
+
+    /* ─── Panel ─────────────────────────────────────── */
+    .panel {
+      background: var(--panel-bg);
+      border: 1.5px solid var(--panel-border);
+      border-radius: 2px;
+      padding: clamp(28px, 5vw, 52px) clamp(24px, 5vw, 52px);
+      margin-top: 40px;
+      box-shadow:
+        0 4px 32px var(--shadow),
+        inset 0 0 0 6px rgba(200,184,138,0.12);
+      position: relative;
+    }
+
+    /* corner ornaments */
+    .panel::before, .panel::after {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-color: var(--panel-border);
+      border-style: solid;
+      opacity: 0.6;
+    }
+    .panel::before { top: 8px; left: 8px; border-width: 2px 0 0 2px; }
+    .panel::after  { bottom: 8px; right: 8px; border-width: 0 2px 2px 0; }
+
+    .panel-number {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .panel h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(1.4rem, 3.5vw, 2rem);
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .panel .panel-tagline {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      font-size: clamp(0.92rem, 2vw, 1.05rem);
+      color: var(--accent2);
+      border-left: 3px solid var(--accent2);
+      padding-left: 14px;
+      margin: 14px 0 20px;
+      line-height: 1.5;
+    }
+
+    .panel p {
+      font-size: clamp(0.95rem, 2vw, 1.08rem);
+      line-height: 1.78;
+      color: var(--ink-light);
+      margin-bottom: 1.1em;
+    }
+    .panel p:last-child { margin-bottom: 0; }
+
+    /* ─── Image Placeholder ─────────────────────────── */
+    .img-placeholder {
+      width: 100%;
+      background: rgba(28, 63, 110, 0.08);
+      border: 1.5px dashed var(--panel-border);
+      border-radius: 2px;
+      margin: 24px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 20px;
+      gap: 10px;
+      text-align: center;
+    }
+
+    .img-placeholder svg {
+      opacity: 0.3;
+    }
+
+    .img-placeholder .img-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      color: var(--ink-light);
+      opacity: 0.65;
+    }
+
+    .img-placeholder .img-caption {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      opacity: 0.7;
+      max-width: 420px;
+    }
+
+    /* When you have a real image, replace .img-placeholder with: */
+    /* <figure class="exhibit-figure"><img src="..." alt="..."><figcaption>...</figcaption></figure> */
+    .exhibit-figure {
+      margin: 24px 0;
+    }
+    .exhibit-figure img {
+      width: 100%;
+      display: block;
+      border: 1.5px solid var(--panel-border);
+    }
+    .exhibit-figure figcaption {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      margin-top: 8px;
+      padding: 0 4px;
+      opacity: 0.8;
+    }
+
+    /* ─── Audio Player ──────────────────────────────── */
+    .audio-block {
+      background: rgba(28,63,110,0.07);
+      border: 1.5px solid var(--panel-border);
+      border-radius: 2px;
+      padding: 20px 22px;
+      margin: 24px 0;
+    }
+
+    .audio-block .audio-title {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .audio-block .audio-desc {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--ink-light);
+      margin-bottom: 12px;
+      opacity: 0.85;
+    }
+
+    .audio-block audio {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    /* placeholder state when no src yet */
+    .audio-placeholder {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0 0;
+      color: var(--ink-light);
+      opacity: 0.5;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+    }
+
+    /* ─── 3D Model Viewer ───────────────────────────── */
+    .model-block {
+      margin: 24px 0;
+    }
+
+    .model-block .model-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    model-viewer {
+      width: 100%;
+      height: 380px;
+      border: 1.5px solid var(--panel-border);
+      background: #0d1f38;
+      --poster-color: #0d1f38;
+      border-radius: 2px;
+    }
+
+    .model-caption {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      margin-top: 8px;
+      padding: 0 4px;
+      opacity: 0.75;
+    }
+
+    .model-hint {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      color: var(--accent2);
+      opacity: 0.6;
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+
+    /* ─── Divider ────────────────────────────────────── */
+    .section-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 48px 0 0;
+      opacity: 0.4;
+    }
+    .section-divider span {
+      flex: 1;
+      height: 1px;
+      background: rgba(255,255,255,0.3);
+    }
+    .section-divider .div-icon {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: rgba(255,255,255,0.6);
+      text-transform: uppercase;
+    }
+
+    /* ─── Acknowledgements ──────────────────────────── */
+    .acknowledgements {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 2px;
+      padding: 28px 32px;
+      margin-top: 48px;
+    }
+
+    .acknowledgements h3 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+    }
+
+    .acknowledgements p {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.7;
+      margin-bottom: 0.7em;
+    }
+    .acknowledgements p:last-child { margin-bottom: 0; }
+
+    /* ─── Footer ─────────────────────────────────────── */
+    footer {
+      text-align: center;
+      padding: 40px 0 20px;
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      color: rgba(255,255,255,0.25);
+      text-transform: uppercase;
+    }
+
+    /* ─── Object Label ───────────────────────────────── */
+    .object-label {
+      margin: 28px 0;
+      padding: 16px 20px 16px 18px;
+      border-left: 4px solid var(--exhibit-teal);
+      background: rgba(167, 239, 241, 0.08);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .object-label.red {
+      border-left-color: var(--exhibit-red);
+      background: rgba(204, 0, 0, 0.06);
+    }
+
+    .object-label.cream {
+      border-left-color: var(--panel-border);
+      background: rgba(255, 241, 210, 0.45);
+    }
+
+    .object-label-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 7px;
+    }
+
+    .object-label-tag {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--exhibit-teal);
+      white-space: nowrap;
+    }
+
+    .object-label.red .object-label-tag  { color: var(--exhibit-red); }
+    .object-label.cream .object-label-tag { color: var(--ink-light); opacity: 0.7; }
+
+    .object-label-name {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--ink);
+    }
+
+    .object-label p {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 0.93rem;
+      line-height: 1.65;
+      color: var(--ink-light);
+      margin-bottom: 0 !important;
+    }
+    .podcast-strip {
+      background: rgba(26, 18, 8, 0.72);
+      border: 1.5px solid var(--panel-border);
+      border-radius: 2px;
+      padding: 20px 28px;
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+
+    .podcast-strip-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.68rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--panel-border);
+      opacity: 0.9;
+    }
+
+    .podcast-strip-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      color: #fff;
+      line-height: 1.4;
+    }
+
+    .podcast-strip-title em {
+      font-style: italic;
+      color: rgba(255,255,255,0.75);
+    }
+
+    .podcast-strip-meta {
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 6px;
+    }
+
+    .podcast-strip audio {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    /* ─── Scroll reveal ──────────────────────────────── */
+    .panel, .acknowledgements {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .panel.visible, .acknowledgements.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="blueprint-bg"></div>
+
+  <div class="page">
+
+    <!-- ── Site Header ── -->
+    <header class="site-header">
+      <p class="overline">St. Augustine National Cemetery &nbsp;·&nbsp; Digital Exhibit</p>
+      <h1>To Restore People's Names</h1>
+      <p class="subtitle">
+        Dr. Amy Larner Giroux's Transformative Digital Public History Work<br>
+        is Recovering Names and Identities Once Lost to Time
+      </p>
+      <div class="header-rule"></div>
+    </header>
+
+    <!-- ── Podcast Block ── -->
+    <div class="podcast-strip">
+      <div class="podcast-strip-label">🎧 Listen Along</div>
+      <div class="podcast-strip-title">"To Restore People's Names" — <em>Knights HistoryCast</em>, Ep. 1</div>
+      <div class="podcast-strip-meta">Dr. Amy Larner Giroux · Sebastian Garcia · 1 hr. 9 min. · UCF VLP Podcast Series, Nov. 2024</div>
+      <audio controls preload="none" src="https://stars.library.ucf.edu/context/knightshistorycast/article/1050/type/native/viewcontent">
+        Your browser does not support the audio element.
+        <a href="https://stars.library.ucf.edu/knightshistorycast/51/">Listen on STARS</a>
+      </audio>
+    </div>
+
+    <!-- ── Panel 1: Introduction ── -->
+    <article class="panel" id="introduction">
+      <p class="panel-number">Panel 01 — Introduction</p>
+      <h2>To Restore People's Names</h2>
+
+      <!-- AUDIO: narration of this panel -->
+      <div class="audio-block">
+        <div class="audio-title">🎙 Audio Narration</div>
+        <div class="audio-desc">Listen to a narrated version of this panel.</div>
+        <!-- Replace the src attribute below with your .mp3 file path when ready -->
+        <!-- <audio controls src="audio/narration-intro.mp3"></audio> -->
+        <div class="audio-placeholder">
+          <span>▶</span>
+          <span>[ Narration audio — replace src in audio tag when file is ready ]</span>
+        </div>
+      </div>
+
+      <!-- IMAGE: exhibit overview / cemetery photo -->
+      <div class="img-placeholder" style="height:240px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="img-label">[ IMAGE PLACEHOLDER ]</span>
+        <span class="img-caption">St. Augustine National Cemetery — overview photograph or the physical exhibit case</span>
+      </div>
+
+      <p>The groundbreaking work of Dr. Amy Larner Giroux at St. Augustine National Cemetery has reshaped how we understand and commemorate the lives of those buried there. As a genealogist and digital historian, Dr. Giroux combines archival research, digital tools, and fieldwork to recover the identities of individuals long considered "unknown."</p>
+
+      <p>At the heart of this project is a commitment to restoring names and stories to those lost to time: Union soldiers from the Civil War misidentified as Indian War casualties, soldiers of the Second Seminole War whose numbers and identities were misunderstood, and Native American prisoners who were buried without recognition.</p>
+
+      <p>This exhibit examines how cemeteries are not just places of rest, but landscapes of memory, history, and justice. Each panel explores a different facet of this work, from Civil War soldiers to Native American prisoners, and from archival discoveries to public commemoration. Together, they tell a story of recovery, remembrance, and the power of historical research.</p>
+    </article>
+
+    <div class="section-divider"><span></span><span class="div-icon">✦</span><span></span></div>
+
+    <!-- ── Panel 2: Civil War Soldiers ── -->
+    <article class="panel" id="civil-war">
+      <p class="panel-number">Panel 02 — Civil War</p>
+      <h2>Lost, but not Forgotten:<br>Civil War Soldiers Recovered</h2>
+      <p class="panel-tagline">This research is not just about correcting the record but restoring names and dignity.</p>
+
+      <!-- AUDIO -->
+      <div class="audio-block">
+        <div class="audio-title">🎙 Audio Narration</div>
+        <div class="audio-desc">Listen to a narrated version of this panel.</div>
+        <div class="audio-placeholder">
+          <span>▶</span>
+          <span>[ Narration audio — replace src in audio tag when file is ready ]</span>
+        </div>
+      </div>
+
+      <!-- IMAGE: stereograph of cemetery 1860s -->
+      <div class="img-placeholder" style="height:240px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="img-label">[ IMAGE PLACEHOLDER ]</span>
+        <span class="img-caption">Stereograph of St. Augustine National Cemetery, 1860s, used by Dr. Giroux for forensic image analysis</span>
+      </div>
+
+      <p>During the Civil War, Union soldiers stationed in St. Augustine faced military threats, disease, and harsh conditions. Many died young and were buried in the local military cemetery. Over time, their wooden grave markers deteriorated in Florida's humid climate, and their names were lost. Later, their graves were mistakenly labeled as casualties of the Indian Wars.</p>
+
+      <p>Dr. Amy Larner Giroux's research has corrected this historical error. Using forensic image analysis of a stereograph showing the cemetery in the 1860s, she identified legible names on headboards and matched them to archival records. She then traced regimental histories, military post returns, and burial records to reconstruct the identities of 108 Union soldiers who died in St. Augustine. Her work revealed that many of these men were from New Hampshire regiments and had died of disease while stationed in Florida.</p>
+
+      <p>Dr. Giroux has connected these soldiers to over 260 family members through genealogical research. Through this work, the lives of young men like Franklin and William Taylor, brothers who died at 17 and 19, are no longer anonymous.</p>
+
+      <!-- 3D MODEL: Indian War Soldiers marker -->
+      <div class="model-block">
+        <div class="model-label">🔲 3D Model — "Indian War Soldiers" Marker</div>
+        <model-viewer
+          src="unknown-soldiers.glb"
+          alt="3D model of the Indian War Soldiers grave marker at St. Augustine National Cemetery"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="1000"
+          rotation-per-second="20deg"
+          shadow-intensity="1"
+          environment-image="neutral"
+          exposure="1.1">
+        </model-viewer>
+        <p class="model-caption">The grave marker originally inscribed "Indian War Soldiers" — the category under which Civil War Union soldiers were misidentified. Drag to rotate.</p>
+      </div>
+
+      <div class="object-label red">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">3D Printed Headstone</span>
+        </div>
+        <p>This 3D printed model is of a headstone that marked the grave of previously unknown Union Soldiers. They were once thought to have been soldiers from the Second Seminole War, hence the inscription. Through her research, Dr. Giroux identified these individuals as Union soldiers from the Civil War.</p>
+      </div>
+    </article>
+
+    <div class="section-divider"><span></span><span class="div-icon">✦</span><span></span></div>
+
+    <!-- ── Panel 3: Second Seminole War ── -->
+    <article class="panel" id="seminole-war">
+      <p class="panel-number">Panel 03 — Second Seminole War</p>
+      <h2>Second Seminole War:<br>Untangling the Numbers</h2>
+      <p class="panel-tagline">Historical memory can be shaped by assumptions and misinterpretations. Rigorous historical analysis can recover and preserve legacies.</p>
+
+      <!-- AUDIO -->
+      <div class="audio-block">
+        <div class="audio-title">🎙 Audio Narration</div>
+        <div class="audio-desc">Listen to a narrated version of this panel.</div>
+        <div class="audio-placeholder">
+          <span>▶</span>
+          <span>[ Narration audio — replace src in audio tag when file is ready ]</span>
+        </div>
+      </div>
+
+      <!-- IMAGE: the coquina pyramids -->
+      <div class="img-placeholder" style="height:240px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="img-label">[ IMAGE PLACEHOLDER ]</span>
+        <span class="img-caption">The three coquina pyramids at St. Augustine National Cemetery commemorating Second Seminole War soldiers</span>
+      </div>
+
+      <p>The Second Seminole War (1835–1842) left a lasting imprint on Florida's military history. At St. Augustine National Cemetery, three coquina pyramids commemorate soldiers who died during the conflict. A sign claims that 1,468 men are buried within them, but Dr. Giroux's research uncovered a different story.</p>
+
+      <p>Using archival documents, newspaper accounts, and military correspondence, Dr. Giroux traced the origins of the pyramids and the men interred within. She discovered that the pyramids were built in 1842, and a record book created two years later listed the names of those who died in the war, not necessarily those buried in the pyramids. After years of searching, she located the original record book in the National Archives, misfiled due to a labeling error.</p>
+
+      <p>Her analysis revealed that only about 140 individuals are actually buried in the pyramids. These include members of Dade's command, disinterred from battlefield graves, and others honored for bravery. Many officers listed on the monument were buried elsewhere, including West Point and Jefferson Barracks. Dr. Giroux's work corrects the inflated burial count and clarifies who is truly memorialized in the pyramids.</p>
+
+      <p>This research highlights how historical memory can be shaped by assumptions and misinterpretations. By returning to primary sources and applying rigorous analysis, Dr. Giroux has helped ensure that the legacy of those who served in the Second Seminole War is accurately preserved.</p>
+
+      <!-- 3D MODELS: Pyramid and Obelisk -->
+      <div class="model-block">
+        <div class="model-label">🔲 3D Model — Coquina Pyramid</div>
+        <model-viewer
+          src="pyramid.glb"
+          alt="3D model of one of the coquina pyramids at St. Augustine National Cemetery commemorating Second Seminole War soldiers"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="1000"
+          rotation-per-second="15deg"
+          shadow-intensity="1"
+          environment-image="neutral"
+          exposure="1.1"
+          camera-orbit="45deg 70deg 3m">
+        </model-viewer>
+        <p class="model-caption">One of the three coquina pyramids at St. Augustine National Cemetery. Dr. Giroux's research found only ~140 individuals are actually interred within them — not the 1,468 claimed on the sign. Drag to rotate.</p>
+      </div>
+
+      <div class="model-block" style="margin-top:32px;">
+        <div class="model-label">🔲 3D Model — Dade Monument Obelisk</div>
+        <model-viewer
+          src="obelisk.glb"
+          alt="3D model of the Dade Monument obelisk at St. Augustine National Cemetery"
+          camera-controls
+          auto-rotate
+          auto-rotate-delay="1000"
+          rotation-per-second="12deg"
+          shadow-intensity="1"
+          environment-image="neutral"
+          exposure="1.1"
+          camera-orbit="30deg 80deg 5m">
+        </model-viewer>
+        <p class="model-caption">The Dade Monument obelisk, commemorating Major Francis Dade and his command, killed in the opening engagement of the Second Seminole War. Drag to rotate.</p>
+        <p class="model-hint">Note: high-resolution model — may take a moment to load on slower connections.</p>
+      </div>
+
+      <div class="object-label cream">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">3D Printed Monuments</span>
+        </div>
+        <p>Dr. Giroux's research corrected the record on the number of men buried under the pyramids, showing that 140 men are buried there, not over 1,400 as had long been thought. These 3D representations of the Dade Pyramids and Monument are scale models created by Amy E. Giroux.</p>
+      </div>
+    </article>
+
+    <div class="section-divider"><span></span><span class="div-icon">✦</span><span></span></div>
+
+    <!-- ── Panel 4: Native American Identities ── -->
+    <article class="panel" id="native-american">
+      <p class="panel-number">Panel 04 — Native American Prisoners</p>
+      <h2>Restoring Native American Identities</h2>
+      <p class="panel-tagline">Dr. Giroux recovered the names of nine previously unknown Native Americans who were incarcerated in St. Augustine.</p>
+
+      <!-- AUDIO -->
+      <div class="audio-block">
+        <div class="audio-title">🎙 Audio Narration</div>
+        <div class="audio-desc">Listen to a narrated version of this panel.</div>
+        <div class="audio-placeholder">
+          <span>▶</span>
+          <span>[ Narration audio — replace src in audio tag when file is ready ]</span>
+        </div>
+      </div>
+
+      <!-- IMAGE: Fort Marion / Castillo de San Marcos -->
+      <div class="img-placeholder" style="height:240px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="img-label">[ IMAGE PLACEHOLDER ]</span>
+        <span class="img-caption">Castillo de San Marcos (Fort Marion), where 72 Native American prisoners were held beginning in 1875</span>
+      </div>
+
+      <p>In 1875, 72 Native American prisoners, leaders from Plains tribes, were forcibly relocated to Fort Marion (now Castillo de San Marcos) in St. Augustine. Their imprisonment was part of the U.S. Army's strategy during the Red River War to suppress resistance and enforce reservation policies. Nine of these men died during their captivity and were buried in St. Augustine National Cemetery, their graves marked only as "six unknown Indians."</p>
+
+      <p>Dr. Giroux's research has brought their identities back to light. Through archival work in the National Archives, the Beinecke Library at Yale, and the Peabody Museum at Harvard, she uncovered correspondence, death records, and oral histories that identified the deceased. Her collaboration with tribal representatives from the Cheyenne, Arapaho, Kiowa, Comanche, and Caddo nations has been central to this work.</p>
+
+      <p>This partnership has led to public ceremonies, educational materials, and plans for interpretive signage at the cemetery. Rather than replacing headstones, the tribes have chosen to "retell" the story, honoring their ancestors while acknowledging the historical context. Dr. Giroux's work has also helped descendants, including UCF students, reconnect with their heritage.</p>
+
+      <p>This project shows the resilience of these Native communities and the importance of restoring names and stories to those erased by history. This research is a testament to how public history can serve both truth and healing.</p>
+
+      <p>In light of this research, the cemetery is scheduled to add new interpretive signage that honors all the Native prisoners held there, and list the nine who are buried in the cemetery by name, tribe, and date of death.</p>
+
+      <div class="object-label">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">Shawl</span>
+        </div>
+        <p>The Cheyenne and Arapaho Tribes of Oklahoma gifted this traditional shawl to Dr. Giroux as a symbolic way to express their gratitude for her extensive help through research. She provided names for the "Six Unknown Indians," uncovering details of their time as prisoners of war during the Plains Wars in the 1800s. This allowed the descendants to perform a proper ceremony to assist the deceased's spirits with a safe journey in the afterlife.</p>
+      </div>
+
+      <div class="object-label">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">Folded Flag</span>
+        </div>
+        <p>Dr. Giroux was presented with the flag that flew over St. Augustine National Cemetery. The flag was flown on November 15, 2023, in memory of the warriors who died in captivity in St. Augustine during the Plains Indians Incarceration.</p>
+      </div>
+    </article>
+
+    <div class="section-divider"><span></span><span class="div-icon">✦</span><span></span></div>
+
+    <!-- ── Panel 5: Digital Humanities ── -->
+    <article class="panel" id="digital-humanities">
+      <p class="panel-number">Panel 05 — Methods</p>
+      <h2>Mapping Memory:<br>Digital Humanities in Action</h2>
+      <p class="panel-tagline">Interdisciplinary methods enhance public history, making cemeteries not just places of mourning, but dynamic sites of research, education, and remembrance.</p>
+
+      <!-- AUDIO -->
+      <div class="audio-block">
+        <div class="audio-title">🎙 Audio Narration</div>
+        <div class="audio-desc">Listen to a narrated version of this panel.</div>
+        <div class="audio-placeholder">
+          <span>▶</span>
+          <span>[ Narration audio — replace src in audio tag when file is ready ]</span>
+        </div>
+      </div>
+
+      <!-- IMAGE: drone map / LiDAR visualization -->
+      <div class="img-placeholder" style="height:240px;">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span class="img-label">[ IMAGE PLACEHOLDER ]</span>
+        <span class="img-caption">Drone or LiDAR mapping of St. Augustine National Cemetery</span>
+      </div>
+
+      <p>Dr. Giroux's work exemplifies the power of digital humanities to transform historical research. As a digital historian for the National Cemetery Administration, she pioneered methods for digitizing cemetery landscapes. Using GPS transponders, drones, and LiDAR scanners, she created detailed maps of St. Augustine National Cemetery, capturing the spatial relationships between monuments and graves.</p>
+
+      <p>One of her most innovative and interdisciplinary projects involved a stereographic photograph of the cemetery. With help from UCF computer science students, she used image forensics to measure distances and reconstruct burial locations. This allowed her to place temporary headboards at the exact spots where Union soldiers were buried, restoring their presence in the landscape.</p>
+
+      <p>Her approach reaches across departments and colleges, combining history, engineering, computer science, anthropology, and genealogy. From drone mapping to archival digitization, Dr. Giroux's work shows that technology is not just a tool but a core part of how historians ask new questions and tell deeper stories.</p>
+
+      <div class="object-label cream">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">Stereoscopic Viewer</span>
+        </div>
+        <p>Stereoscopic viewers, like this one patented in 1897, enabled users to see images in 3D. The viewer looked through the eyepiece at two nearly identical images that the brain registers as a single 3D image. UCF Computer Science students used these images to compute the location of the original grave markers in the photos.</p>
+      </div>
+
+      <div class="object-label red">
+        <div class="object-label-header">
+          <span class="object-label-tag">From the Exhibit</span>
+          <span class="object-label-name">Union Cap</span>
+        </div>
+        <p>This is a replica of the type of hat commonly worn by Union soldiers during the Civil War. The hats were wool with a leather bill. Some versions of the caps were known as a "kepi," an anglicized version of the word for hats worn by many European militaries in the same era.</p>
+      </div>
+    </article>
+
+    <div class="section-divider"><span></span><span class="div-icon">✦</span><span></span></div>
+
+    <!-- ── Panel 6: Public History / Podcast ── -->
+    <article class="panel" id="public-history">
+      <p class="panel-number">Panel 06 — Public History</p>
+      <h2>Public History:<br>Connecting Past and Present</h2>
+
+
+      <p>At the core of Dr. Giroux's work is a simple but profound goal: restoring people's names. As a certified genealogist, she has traced the lives of over 100 U.S. Army soldiers and dozens of Native American prisoners, connecting them to hundreds of descendants. Her research is not just about the past, but also about how history impacts the living.</p>
+
+      <p>Through collaboration with Native tribes, public educators, and the National Cemetery Administration, Dr. Giroux's work has led to new forms of commemoration. Interpretive signage, educational tours, and classroom materials now tell the stories of those once considered "unknown." Her research, which reaches across disciplines and departments, has inspired students, like those in UCF's computer science program, to engage with history in meaningful ways.</p>
+
+      <p>If you are interested in getting involved in research like this, consider one of the History Department's many internships available to undergraduate students. If you want to continue your studies, UCF's History M.A. program and Texts &amp; Technology Ph.D. program both offer concentrations in Public History and compelling opportunities to dive into interdisciplinary research.</p>
+    </article>
+
+    <!-- ── Acknowledgements ── -->
+    <div class="acknowledgements" id="acknowledgements">
+      <h3>Acknowledgements</h3>
+      <p>This exhibit project showcasing Dr. Giroux's research was created by a team of graduate and undergraduate students: Christopher Alfonso, Danielle Crosby, Kailey Freeman-Depelisi, Jordan Kearschner, and Eric Thompson.</p>
+      <p>This opportunity would not have been possible without the materials and support provided by the UCF History Department, the Center for Humanities and Digital Research (CHDR), and UCF Phi Alpha Theta.</p>
+    </div>
+
+    <footer>
+      St. Augustine National Cemetery Digital Exhibit &nbsp;·&nbsp; UCF Department of History &nbsp;·&nbsp; Prototype
+    </footer>
+
+  </div><!-- /page -->
+
+  <script>
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.panel, .acknowledgements').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
