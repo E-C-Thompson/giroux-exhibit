@@ -476,6 +476,40 @@
       color: rgba(255,255,255,0.75);
     }
 
+    .podcast-platforms {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .podcast-platforms-label {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      margin-right: 4px;
+    }
+
+    .podcast-platforms a {
+      font-family: 'Courier Prime', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.55);
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 2px;
+      padding: 3px 8px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .podcast-platforms a:hover {
+      color: var(--exhibit-teal);
+      border-color: var(--exhibit-teal);
+    }
+
     .podcast-strip-desc {
       font-family: 'EB Garamond', Georgia, serif;
       font-style: italic;
@@ -537,6 +571,14 @@
         Your browser does not support the audio element.
         <a href="https://stars.library.ucf.edu/knightshistorycast/51/">Listen on STARS</a>
       </audio>
+      <div class="podcast-platforms">
+        <span class="podcast-platforms-label">Listen in your podcatcher:</span>
+        <a href="https://knightshistorycast.podbean.com/e/1-to-restore-peoples-names-the-2024-ucf-vlp-podcast-series/" target="_blank" rel="noopener">Podbean</a>
+        <a href="https://podcasts.apple.com/us/podcast/knights-historycast/id1680254260" target="_blank" rel="noopener">Apple Podcasts</a>
+        <a href="https://open.spotify.com/show/6RCL70HxMsPWCZRjhc34MQ" target="_blank" rel="noopener">Spotify</a>
+        <a href="https://music.amazon.com/podcasts/3571ac7c-effe-40b2-92e2-cc05abcb09cd" target="_blank" rel="noopener">Amazon Music</a>
+        <a href="https://iheart.com/podcast/111972398" target="_blank" rel="noopener">iHeart</a>
+      </div>
     </div>
 
     <!-- ── Panel 1: Introduction ── -->
